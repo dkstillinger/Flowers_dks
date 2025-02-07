@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            width: 100%;
+            height: auto;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #imageGrid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0px;
+        }
+        .imageContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+        }
+        .imageContainer img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 300px;
+            max-height: 300px;
+            cursor: pointer;
+            object-fit: cover;
+        }
+        .imageLabel {
+            margin-top: -5px;
+            text-align: center;
+        }
+
+        /* Full Image View */
+        #fullImageView {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: white;
+            z-index: 1000;
+        }
+
+        #imageWrapper {
+            min-height: 100vh;
+            min-width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #fullImage {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+            position: relative;
+        }
+
+        /* Zoom Buttons */
+        .zoom-button {
+            position: fixed;
+            top: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1001;
+        }
+
+        #zoomIn {
+            right: 60px;
+        }
+
+        #zoomOut {
+            right: 20px;
+        }
+
+        /* Footer Styling */
+        #footer {
+            text-align: left;
+            padding: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<center><font color=#cf0000 size=5><i><b>Silver Bay Flowers - Alphabetic Index Vol. 2</b></i></font></center>
+<center><IMG SRC="greenbar.gif" width=300 height=3></center>
+<center><font size=2 face=arial color=green><B>Wildflowers in the Silver Bay, NY area near Lake George</B></font></center>
+
+<!-- Image Grid View -->
+<div id="imageGrid"></div>
+
+<!-- Full Image View -->
+<div id="fullImageView">
+    <button id="zoomIn" class="zoom-button">+</button>
+    <button id="zoomOut" class="zoom-button">-</button>
+    <div id="imageWrapper">
+        <img id="fullImage" src="" alt="">
+    </div>
+</div>
+
+<!-- Footer -->
+<div id="footer">
+    <font size=1><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Comments to dkstillinger@gmail.com
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2025</font>
+    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="lineyx.gif" height=2>
+</div>
+
+<script>
+    var images = [
+        {src: "FlowerSlides/2Baneberry_Redsm.jpg", alt: "Actaea rubra", fullSrc:  "FlowerSlides/2Baneberry_Red.jpg"},
+
+				{src: "FlowerSlides/2Alfalfasm.jpg", alt: "Alfalfa", fullSrc:  "FlowerSlides/2Alfalfa.jpg"},
+				<!--{src:  "2Alfalfasm.jpg", alt:  "Alfalfa", fullSrc:  "2Alfalfa.jpg"},-->
+
+				{src: "FlowerSlides/2Pussytoessm.jpg", alt: "Antennaria neglecta", fullSrc:  "FlowerSlides/2Pussytoessm.jpg"},
+
+				{src: "FlowerSlides/2aMayweedchamomilesm.jpg", alt: "Anthemis cotula", fullSrc:  "FlowerSlides/2aMayweedchamomile.jpg"},
+
+				{src: "FlowerSlides/2Columbine_Wildsm.jpg", alt: "Aquilegia canadensis", fullSrc:  "FlowerSlides/2Columbine_Wild.jpg"},
+
+				{src: "FlowerSlides/2Ginger_Wildsm.jpg", alt: "Asarum canadense", fullSrc:   "FlowerSlides/2Ginger_Wild.jpg"},
+
+				{src: "FlowerSlides/2aMilkweed_Pokesm.jpg", alt: "Asclepias exaltata", fullSrc:   "FlowerSlides/2aMilkweed_Poke.jpg"},
+
+				{src: "FlowerSlides/2aAvens_Whitesm.jpg", alt: "White Avens", fullSrc:   "FlowerSlides/2aAvens_White.jpg"},
+
+				{src: "FlowerSlides/2Baneberry_Redsm.jpg", alt: "Red Baneberry", fullSrc:  "FlowerSlides/2Baneberry_Red.jpg"},
+
+				{src: "FlowerSlides/2Barberry_Japanesesm.jpg", alt: "Japanese Barberry", fullSrc:  "FlowerSlides/2Barberry_Japanese.jpg"},
+
+				{src: "FlowerSlides/2Barberry_Japanesesm.jpg", alt: "Berberis thunbergii", fullSrc:   "FlowerSlides/2Barberry_Japanese.jpg"},
+
+				{src: "FlowerSlides/2BirdsfootTrefoilsm.jpg", alt: "Birdsfoot Trefoil", fullSrc:   "FlowerSlides/2BirdsfootTrefoil.jpg"},
+
+			    {src: "FlowerSlides/2aBugloss_Viperssm.jpg", alt: "Viper's Bugloss", fullSrc:  "FlowerSlides/2aBugloss_Vipers.jpg"},
+
+				{src: "FlowerSlides/2ShepherdsPursesm.jpg", alt: "Capsella bursa-pastoris", fullSrc:   "FlowerSlides/2ShepherdsPurse.jpg",},
+
+				{src: "FlowerSlides/2Cheesessm.jpg", alt: "Cheeses (Mallow)", fullSrc:  "FlowerSlides/2Cheeses.jpg"},
+
+				{src: "FlowerSlides/2LambsQuarterssm.jpg", alt: "Chenopodium album", fullSrc:  "FlowerSlides/2LambsQuarters.jpg"},
+
+				{src: "FlowerSlides/2Pepperbush_Sweetsm.jpg", alt: "Clethra alnifolia", fullSrc:  "FlowerSlides/2Pepperbush_Sweet.jpg"},
+
+				{src: "FlowerSlides/2Clintoniasm.jpg", alt: "Clintonia", fullSrc:  "FlowerSlides/2Clintonia.jpg"},
+
+				{src: "FlowerSlides/2Clintoniasm.jpg", alt: "Clintonia borealis", fullSrc:  "FlowerSlides/2Clintonia.jpg"},
+
+				{src: "FlowerSlides/2Columbine_Wildsm.jpg", alt: "Wild Columbine", fullSrc:  "FlowerSlides/2Columbine_Wild.jpg"},
+
+				{src: "FlowerSlides/2Rocket_Damessm.jpg", alt: "Dame's Rocket", fullSrc:  "FlowerSlides/2Rocket_Dames.jpg"},
+
+				{src: "FlowerSlides/2Toothwortsm.jpg", alt: "Dentaria diphylla", fullSrc:  "FlowerSlides/2Toothwort.jpg"},
+
+				{src: "FlowerSlides/2aBugloss_Viperssm.jpg", alt: "Echium vulgare", fullSrc:  "FlowerSlides/2aBugloss_Vipers.jpg"},
+
+				{src: "FlowerSlides/2Helleborinesm.jpg", alt: "Epipactis helleborine", fullSrc:  "FlowerSlides/2Helleborine.jpg"},
+
+				{src: "FlowerSlides/2Mustard_Wormseedsm.jpg", alt: "Erysimum cheiranthoides", fullSrc: "FlowerSlides/2Mustard_Wormseed.jpg"},
+
+				{src: "FlowerSlides/2aLicorice_Wildsm.jpg", alt: "Galium circaezans", fullSrc:  "FlowerSlides/2aLicorice_Wild.jpg"},
+
+				{src: "FlowerSlides/2aAvens_Whitesm.jpg", alt: "Geum canadense", fullSrc:   "FlowerSlides/2aAvens_White.jpg"},
+
+				{src: "FlowerSlides/2Ginger_Wildsm.jpg", alt: "Wild Ginger", fullSrc:  "FlowerSlides/2Ginger_Wild.jpg"},
+
+				{src: "FlowerSlides/2GroundIvysm.jpg", alt: "Glechoma hederacea", fullSrc:  "FlowerSlides/2GroundIvy.jpg"},
+
+				{src: "FlowerSlides/2GroundIvysm.jpg", alt: "Ground Ivy", fullSrc:  "FlowerSlides/2GroundIvy.jpg"},
+
+				{src: "FlowerSlides/2Helleborinesm.jpg", alt: "Helleborine Orchid", fullSrc:  "FlowerSlides/2Helleborine.jpg"},
+
+				{src: "FlowerSlides/2Rocket_Damessm.jpg", alt: "Hesperis matronalis", fullSrc:  "FlowerSlides/2Rocket_Dames.jpg"},
+
+				{src: "FlowerSlides/2StJohnswortsm.jpg", alt: "Hypericum perforatum", fullSrc:  "FlowerSlides/2StJohnswort.jpg"},
+
+				{src: "FlowerSlides/2Knotweed_Japanesesm.jpg", alt: "Japanese Knotweed", fullSrc:  "FlowerSlides/2Knotweed_Japanese.jpg"},
+
+				{src: "FlowerSlides/2LambsQuarterssm.jpg", alt: "Lamb's Quarters", fullSrc:  "FlowerSlides/2LambsQuarterssm.jpg"},
+
+				{src: "FlowerSlides/2aLicorice_Wildsm.jpg", alt: "Wild Licorice", fullSrc:  "FlowerSlides/2aLicorice_Wild.jpg"},
+
+				{src: "FlowerSlides/2aLily_Woodsm.jpg", alt: "Lilium philadelphicum", fullSrc:  "FlowerSlides/2aLily_Wood.jpg"},
+
+				{src: "FlowerSlides/2aLily_Woodsm.jpg", alt: "Wood Lily", fullSrc:  "FlowerSlides/2aLily_Wood.jpg"},
+
+				{src: "FlowerSlides/2aLoosestrife_Whorledsm.jpg", alt: "Whorled Loosestrife", fullSrc:  "FlowerSlides/2aLoosestrife_Whorled.jpg"},
+
+				{src: "FlowerSlides/2BirdsfootTrefoilsm.jpg", alt: "Lotus corniculatus"  , fullSrc:  "FlowerSlides/2BirdsfootTrefoil.jpg"},
+
+		        {src: "FlowerSlides/2Moneywortsm.jpg", alt: "Lysimachia nummularia"  , fullSrc:  "FlowerSlides/2Moneywort.jpg"},
+
+		        {src: "FlowerSlides/2aLoosestrife_Whorledsm.jpg", alt: "Lysimachia quadrifolia"  , fullSrc:  "FlowerSlides/2aLoosestrife_Whorled.jpg"},
+
+				{src: "FlowerSlides/2Cheesessm.jpg", alt: "Malva neglecta", fullSrc:   "FlowerSlides/2Cheeses.jpg"},
+
+				{src: "FlowerSlides/2aMayweedchamomilesm.jpg", alt: "Mayweed Chamomile", fullSrc:"FlowerSlides/2aMayweedchamomile.jpg"},
+
+				{src: "FlowerSlides/2Alfalfasm.jpg", alt: "Medicago sativa", fullSrc:   "FlowerSlides/2Alfalfa.jpg"},
+
+				{src: "FlowerSlides/2aMilkweed_Pokesm.jpg", alt: "Poke Milkweed", fullSrc:   "FlowerSlides/2aMilkweed_Poke.jpg"},
+
+				{src: "FlowerSlides/2Moneywortsm.jpg", alt: "Moneywort", fullSrc:  "FlowerSlides/2Moneywort.jpg"},
+
+				{src: "FlowerSlides/2Mustard_Wormseedsm.jpg", alt: "Wormseed Mustard", fullSrc:  "FlowerSlides/2Mustard_Wormseed.jpg"},
+
+				{src: "FlowerSlides/2Nettle_Tallsm.jpg", alt: "Tall Nettle ", fullSrc:  "FlowerSlides/2Nettle_Tall.jpg"},
+
+				{src: "FlowerSlides/2Pepperbush_Sweetsm.jpg", alt: "Sweet Pepperbush", fullSrc:  "FlowerSlides/2Pepperbush_Sweet.jpg"},
+
+				{src: "FlowerSlides/2Pokeweedsm.jpg", alt: "Phytolacca americana", fullSrc:  "FlowerSlides/2Pokeweed.jpg"},
+
+				{src: "FlowerSlides/2Pokeweedsm.jpg", alt: "Pokeweed", fullSrc:  "FlowerSlides/2Pokeweed.jpg"},
+
+				{src: "FlowerSlides/2SolomonsSealsm.jpg", alt: "Polygonatum pubescens", fullSrc:  "FlowerSlides/2SolomonsSeal.jpg"},
+
+				{src: "FlowerSlides/2Knotweed_Japanesesm.jpg", alt: "Polygonum cuspidatum", fullSrc:  "FlowerSlides/2Knotweed_Japanese.jpg"},
+
+				{src: "FlowerSlides/2Pussytoessm.jpg", alt: "Pussytoes", fullSrc:  "FlowerSlides/2Pussytoes.jpg"},
+
+				{src: "FlowerSlides/2StJohnswortsm.jpg", alt: "St. Johnswort", fullSrc:  "FlowerSlides/2StJohnswort.jpg"},
+
+				{src: "FlowerSlides/2Snakeroot_Blacksm.jpg", alt: "Sanicula marilandica", fullSrc:  "FlowerSlides/2Snakeroot_Black.jpg"},
+
+				{src: "FlowerSlides/2ShepherdsPursesm.jpg", alt: "Shepherd's Purse", fullSrc:  "FlowerSlides/2ShepherdsPurse.jpg"},
+
+				{src: "FlowerSlides/2Snakeroot_Blacksm.jpg", alt: "Black Snakeroot (Sanicle)", fullSrc:  "FlowerSlides/2Snakeroot_Black.jpg"},
+
+				{src: "FlowerSlides/2SolomonsSealsm.jpg", alt: "Hairy Solomon's Seal", fullSrc:  "FlowerSlides/2SolomonsSeal.jpg"},
+
+				{src: "FlowerSlides/2Speedwell_Cornsm.jpg", alt: "Corn Speedwell", fullSrc:  "FlowerSlides/2Speedwell_Corn.jpg"},
+
+				{src: "FlowerSlides/2Speedwell_ThymeLeavedsm.jpg", alt: "Thyme-leaved Speedwell", fullSrc:  "FlowerSlides/2Speedwell_ThymeLeavedsm.jpg"},
+
+				{src: "FlowerSlides/2Toothwortsm.jpg", alt: "Toothwort", fullSrc:  "FlowerSlides/2Toothwort.jpg"},
+
+				{src: "FlowerSlides/2Nettle_Tallsm.jpg", alt: "Urtica procera", fullSrc:  "FlowerSlides/2Nettle_Tall.jpg"},
+
+				{src: "FlowerSlides/2Valeriansm.jpg", alt: "Valerian", fullSrc:  "FlowerSlides/2Valerian.jpg"},
+
+				{src: "FlowerSlides/2Valeriansm.jpg", alt: "Valeriana officinalis", fullSrc:  "FlowerSlides/2Valerian.jpg"},
+
+				{src: "FlowerSlides/2Speedwell_Cornsm.jpg", alt: "Veronica arvensis", fullSrc:  "FlowerSlides/2Speedwell_Corn.jpg"},
+
+			{src: "FlowerSlides/2Speedwell_ThymeLeavedsm.jpg", alt: "Veronica serpyllifolia", fullSrc:  "FlowerSlides/2Speedwell_ThymeLeaved.jpg"},
+    ];
+
+    var imageGrid = document.getElementById('imageGrid');
+    var fullImageView = document.getElementById('fullImageView');
+    var fullImage = document.getElementById('fullImage');
+    var imageWrapper = document.getElementById('imageWrapper');
+    var zoomInButton = document.getElementById('zoomIn');
+    var zoomOutButton = document.getElementById('zoomOut');
+    var footer = document.getElementById('footer');
+    var currentScale = 1;
+
+    function openImage(fullSrc, altText) {
+        history.pushState({page: 'fullImage'}, '', '#fullImage');
+        imageGrid.style.display = 'none';
+        fullImageView.style.display = 'block';
+        fullImage.src = fullSrc;
+        fullImage.alt = altText;
+        currentScale = 1;
+        fullImage.style.transform = 'scale(1)';
+        footer.style.display = 'none';
+    }
+
+    function setImageTransform() {
+        fullImage.style.transform = `scale(${currentScale})`;
+
+        // Calculate new dimensions based on scale
+        const newWidth = fullImage.offsetWidth * currentScale;
+        const newHeight = fullImage.offsetHeight * currentScale;
+
+        // Calculate the scroll offsets needed to center the image
+        const scrollX = (newWidth - imageWrapper.clientWidth) / 2;
+        const scrollY = (newHeight - imageWrapper.clientHeight) / 2;
+
+        // Set minimum width and height for the wrapper to ensure scrollability
+        imageWrapper.style.minWidth = `${newWidth}px`;
+        imageWrapper.style.minHeight = `${newHeight}px`;
+
+        // Center the scroll position
+        if (scrollX > 0) {
+            fullImageView.scrollLeft = scrollX;
+        }
+        if (scrollY > 0) {
+            fullImageView.scrollTop = scrollY;
+        }
+    }
+
+    zoomInButton.onclick = function() {
+        currentScale += 0.1;
+        setImageTransform();
+    };
+
+    zoomOutButton.onclick = function() {
+        if (currentScale > 0.2) {
+            currentScale -= 0.1;
+            setImageTransform();
+        }
+    };
+
+    window.onpopstate = function(event) {
+        if (event.state && event.state.page === 'fullImage') {
+            fullImageView.style.display = 'block';
+            imageGrid.style.display = 'none';
+            footer.style.display = 'none';
+        } else {
+            fullImageView.style.display = 'none';
+            imageGrid.style.display = 'grid';
+            footer.style.display = 'block';
+        }
+    };
+
+    // Add image load event handler to ensure proper initial sizing
+    fullImage.onload = function() {
+        setImageTransform();
+    };
+
+    images.forEach(function(image) {
+        var container = document.createElement('div');
+        container.className = 'imageContainer';
+
+        var img = document.createElement('img');
+        img.src = image.src;
+        img.alt = image.alt;
+        img.onclick = function() { openImage(image.fullSrc, image.alt); };
+
+        var label = document.createElement('div');
+        label.className = 'imageLabel';
+        label.textContent = image.alt;
+
+        container.appendChild(img);
+        container.appendChild(label);
+        imageGrid.appendChild(container);
+    });
+</script>
+
+</body>
+</html>
